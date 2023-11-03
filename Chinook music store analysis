@@ -1,0 +1,42 @@
+#In this project we will be doing a Business analysis of albums and tracks sold by different artists and different profit per genre to find which three artists are most recommended to buy to 
+sell at the record store in Chinook
+
+#1. In this query we present an assessment on the volume of tracks sold per genre within the database using a structured JOIN operation to gather data from 3 different tables and 
+we rely on an aggregated function that effectivey quantifies the number of tracks sold and finish with an order by statement to unveil the highest performing genres first 
+#How many tracks are sold in each genre?
+SELECT GEN.name AS Genre, COUNT(*) AS TracksSold
+FROM chinook.genres GEN
+JOIN chinook.tracks TRA ON GEN.GenreId = TRA.GenreId
+JOIN chinook.invoice_items ITM ON TRA.TrackId = ITM.TrackId
+GROUP BY Genre
+ORDER BY TracksSold DESC;
+
+#2. In this query we present an assesment in the volume of tracks sold per genre from the United States and this time by percent instead of absolute numbers
+SELECT GEN.name AS Genre,
+      ROUND (COUNT(CASE WHEN CUS.Country = 'USA' THEN 1 ELSE NULL END) * 100.0 / COUNT(*)) AS PercentageSoldInUSA
+FROM chinook.genres GEN
+JOIN chinook.tracks TRA ON GEN.GenreId = TRA.GenreId
+JOIN chinook.invoice_items ITM ON TRA.TrackId = ITM.TrackId
+JOIN chinook.invoices INV ON ITM.InvoiceId = INV.InvoiceId
+JOIN chinook.customers CUS ON INV.CustomerId = CUS.CustomerId
+GROUP BY Genre
+ORDER BY PercentageSoldInUSA DESC
+
+#3. This SQL query is designed to compile a comprehensive and organized dataset that showcases the top-selling artists within the Chinook music store based on track sales.
+This query serves as a valuable tool for making informed decisions regarding potential album acquisitions for the Chinook store, offering a consolidated overview of top-performing 
+artists and their respective track sales data
+SELECT GEN.name AS Genre , ART.Name AS Artist,
+TRK.name AS 'Song Title', 
+COUNT(*) AS 'Tracks Sold'
+FROM chinook.genres AS GEN
+LEFT JOIN chinook.tracks AS TRK ON GEN.GenreId = TRK.GenreId
+LEFT JOIN chinook.albums AS ALB ON TRK.AlbumId = ALB.AlbumId
+LEFT JOIN chinook.artists AS ART ON ALB.ArtistId = ART.ArtistId
+GROUP BY Genre 
+ORDER BY COUNT(*) DESC
+
+#4. Closing Analysis
+After a meticulous analysis of the Chinook music store's sales data, it is evident that to enhance the store's music collection strategically, the acquisition of albums by AC/DC, 
+Caetano Veloso, and Apocalyptica is highly recommended. These three artists represent distinct musical genres, facilitating a dynamic and diversified appeal to a broader audience. Notably, 
+these recommendations align with data-driven insights, as AC/DC stands out as the top-selling artist, amassing over 1,000 tracks sold for their iconic song 'For Those About To Rock (We Salute You).'
+This selection not only caters to customer preferences but also capitalizes on proven track records, ensuring a more enriching and profitable music catalog.
